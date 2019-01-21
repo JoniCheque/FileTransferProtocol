@@ -11,8 +11,6 @@ def main():
         if not argument.__contains__('.py'):
             arguments.append(argument)
         
-    for arg in arguments:
-        print(type(arg))
 
     # Check that connection is established
     print('Possible request are LIST, DOWNLOAD.')
