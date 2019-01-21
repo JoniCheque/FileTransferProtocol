@@ -1,0 +1,37 @@
+________________________________________ 	________________________________________ 	________________________________________	_______________________________________	
+|		Protocol:		|	|		Client:			|	|		Server:			|	|	        Requirements	        |    
+|---------------------------------------|	|---------------------------------------|       |---------------------------------------|	|     for file transfer protocol:	|
+| * Class methods:			|	|  * Requests:				|       |  * Requests:				|	|---------------------------------------|
+|   - send_request()			|	|    - LIST				|       |    - ERROR				|	| Two possible requests for Client:	|
+|   - read_response()			|	|    - DOWNLOAD				|       |    - FILES				| 	|  * LIST				|
+|   - receive_message_length()		|	|---------------------------------------|       |---------------------------------------| 	|  * DOWNLOAD				|
+|   - receive_message_part_lengths()	|	|         Transport Protocol:		|       |         Transport Protocol:		|	|					|
+|   - send_data()			|	|---------------------------------------|       |---------------------------------------| 	| Two possible requests for Server:	|
+|   - send_message()			|	| In file transfer protocol we need 	|       | In file transfer protocol we need 	| 	|  * ERROR				|
+|---------------------------------------|	| to use TCP protocol because we want 	|       | to use TCP protocol because we want 	| 	|  * FILE				|
+|         Transport Protocol:		|	| to be sure that every byte will get	|       | to be sure that every byte will get	| 	|					|
+|---------------------------------------|	| transfered in rigth order.		|       | transfered in rigth order.		| 	| Example requests from both:		|
+| In file transfer protocol we need 	|	|---------------------------------------|       |---------------------------------------| 	|  * Separator byte			|
+| to use TCP protocol because we want 	|	|        Messages formatted by:		|       |        Messages formatted by:		| 	|  * Body length			|
+| to be sure that every byte will get	|	|---------------------------------------|       |---------------------------------------| 	|  * ie. path to home dir		|
+| transfered in rigth order.		|	| * First there are told how big whole 	|       | * First there are told how big whole 	| 	|					|
+|---------------------------------------|	| message are going to be and then	|       | message are going to be and then	| 	| Protocol:				|
+|        Messages formatted by:		|	| there are told file actual size	|       | there are told file actual size	| 	|  * Implementation for request         |
+|---------------------------------------|	| * Messages use '\r\n' as a separator.	|       | * Messages use '\r\n' as a separator.	| 	|  and reponse should be same		|
+| * First there are told how big whole 	|	|---------------------------------------|       |---------------------------------------| 	|  ie. optional argument, if it's 	|
+| message are going to be and then	|	|    Error Handling (client/server):	|       |    Error Handling (client/server):	| 	|  empty client asks list otherwise	|
+| there are told file actual size	|	|---------------------------------------|       |---------------------------------------| 	|  server send list of files back	|
+| * Messages use '\r\n' as a separator.	|	|  * File does not exist		|       | * Permmission denied 			| 	|  and both use same method.		|
+|---------------------------------------|	|  * Cannot access to file		|       | * File does not exist			| 	|_______________________________________|
+|    Error Handling protocol:		|	|  * Server has unexpected error	|       |---------------------------------------|
+|---------------------------------------|	|---------------------------------------|       |       Error Handling (network):	|
+| * Invalid Ip address			|	|       Error Handling (network):	|       |---------------------------------------|
+| * Invalid port number			|	|---------------------------------------|       |  * Connection terminated 		|
+| * Invalid request			|	|  * Broken pipe			|       |---------------------------------------|
+|---------------------------------------|	|  * Connection refused			|       |     How to terminate connection:	|
+|     How to terminate connection:	|	|  * Connection terminated 		|       |---------------------------------------|
+|---------------------------------------|	|---------------------------------------|       | * Ctrl+c				|
+| * Ctrl+c				|	|     How to terminate connection:	|       |_______________________________________|
+|_______________________________________|	|---------------------------------------|
+						| * Ctrl+c				|
+						|_______________________________________|
