@@ -7,25 +7,6 @@ import os
 import protocol
 
 
-def handle_request(request = ''):
-    path = '../../Assignment05'
-
-    if request.lower().__contains__('list'):
-        print('LIST request got.')
-        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-        print(files)
-        return (files, False)
-
-    elif request.lower().__contains__('download'):
-        print('DOWNLOAD request got')
-        print(request.split(" "))
-        f = request.split(' ')[-1]
-        return (path + '/' + f.strip("'"), True)
-
-    else:
-        print('Invalid request')
-
-
 def main():
     """Server main program.
     Main usage: python3 server.py [IP address], [Port number]"""
@@ -48,7 +29,7 @@ def main():
         while True:
             conn, addr = sock.accept()
             message = protocol.receive_message(conn)
-            action, download_request = handle_request(str(message))
+            action, download_request = protocol.send_request(str(message))
             logging.info('Response on server are: {}'.format(action))
 
             if download_request:
