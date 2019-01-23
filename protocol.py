@@ -1,3 +1,7 @@
+import logging
+
+logging.basicConfig(format='%(asctime)s: [PROTOCOL] - %(message)s', level=logging.INFO)
+
 def send_request(**args):
     """Client and server both have two request each of them.
     Server request:
@@ -32,18 +36,14 @@ def receive_message(socket):
     Return:
         message_buffer: Content of buffer 
     """
-    print('Receive message!')
     message_buffer = ''
     message_length = receive_message_length(socket)
-    print('Bytes incoming: {}'.format(message_length))
     received_length = 0
 
     while received_length < message_length:
-        print('Socket receiver')
         data = socket.recv(1024)
         message_buffer += str(data)
         received_length += len(data)
-        print(data)
 
     return message_buffer
 
@@ -56,17 +56,17 @@ def receive_message_length(socket):
     Return:
         buffer_size: Size of buffer which is coming
     """
-    print('From receice message length method')
     buffer_size = ''
     while True:
         byte = socket.recv(1)
+        logging.info('BYTE: {}'.format(byte))
         if byte == b'':
             raise Exception('Error occured')
         if byte == b'\n':
             break
         buffer_size += str(byte)
     
-    print('DEBUG: data_buffer type is: {}'.format(int(len(buffer_size))))
+    logging.info('BUFFER SIZE: {}'.format(len(buffer_size)))
     return len(buffer_size)
 
 
@@ -92,10 +92,8 @@ def send_data(socket, data):
     """
     total_sent = 0
     while total_sent < len(data):
-        for d in data:
-            sent = socket.send(data)
+        sent = socket.send(data)
         total_sent += sent
-    print('Sent {} bytes.'.format(total_sent))
 
 
 def send_message(socket, data):
@@ -107,9 +105,7 @@ def send_message(socket, data):
     Return:
     """
     data_length = len(data)
-    print('Message part 1.')
     #send_data(socket, str(data_length) + '\n')
     data_as_bytes = bytes(str(data_length) + '\n', 'utf8')
     send_data(socket, data_as_bytes)
-    print('Message part 2.')
     send_data(socket, bytes(str(data), 'utf8'))

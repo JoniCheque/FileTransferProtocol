@@ -9,7 +9,7 @@ def main():
     """Client main program.
     Main usage: python3 client.py [IP address], [Port number]
     Program will launch TCP client and shows possible request."""
-    logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s: [CLIENT] - %(message)s', level=logging.INFO)
     arguments = []
 
     logging.info('Iterating over arguments.')
@@ -21,6 +21,27 @@ def main():
     port = int(arguments[1])
     logging.info('Arguments parsed: (server: {}, port: {})'.format(server, port))
 
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((server, port))
+    logging.info('Connected to server: {}'.format(s))
+
+    request = input('\nPossible request are LIST and DOWNLOAD,\n' +
+            'LIST request do not take any parameters server respond with\n' +
+            'LIST of files. DOWNLOAD method takes file name as parameter.\n' +
+            'You can terminate FTP program with CTRL + c.\n' +
+            'Please give your request: ')
+
+    logging.info('Got request from user: {}'.format(request))
+
+    logging.info('protocol.send({}, {})'.format(s, request))
+    protocol.send_message(s, request)
+    received_message = protocol.receive_message(s)
+    logging.info('Message received from server: {}'.format(received_message))
+    s.close()
+    logging.info('Connectin closed')
+
+    """
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
@@ -51,7 +72,7 @@ def main():
     except KeyboardInterrupt:
         print('\nBye!')
         sys.exit(0)
-
+    """
 
     # try except --> connection
     # if connection is is made use
