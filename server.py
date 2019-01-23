@@ -2,8 +2,28 @@ import logging
 import socket
 import time
 import sys
+import os
 
 import protocol
+
+
+def handle_request(request = ''):
+    path = '../../Assignment05'
+
+    if request.lower().__contains__('list'):
+        print('LIST request got.')
+        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        print(files)
+        return (files, False)
+
+    elif request.lower().__contains__('download'):
+        print('DOWNLOAD request got')
+        print(request.split(" "))
+        f = request.split(' ')[-1]
+        return (path + '/' + f.strip("'"), True)
+
+    else:
+        print('Invalid request')
 
 
 def main():
@@ -12,62 +32,35 @@ def main():
     logging.basicConfig(format='%(asctime)s: [SERVER] - %(message)s', level=logging.INFO)
     arguments = []
 
-    logging.info('Iterating arguments')
+    logging.info('Running...')
     for argument in sys.argv:
         if not argument.__contains__('.py'):
             arguments.append(argument)
 
     client = arguments[0]
     port = int(arguments[1])
-    logging.info('Got client info: (client: {}, port: {})'.format(client, port))
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind((client, port))
+    sock.listen(5)
 
-    logging.info('Socket {} binded'.format(s))
-    s.bind((client, port))
-    logging.info('Listening sockets')
-    s.listen(5)
-    connection, address = s.accept()
-    logging.info('Socket accepted: (connection: {}, address: {})'.format(connection, address))
+    try:
+        while True:
+            conn, addr = sock.accept()
+            message = protocol.receive_message(conn)
+            action, download_request = handle_request(str(message))
+            logging.info('Response on server are: {}'.format(action))
 
-    #while True:
-    while True:
-        logging.info('Connection status: {}'.format(connection))
-        message = protocol.receive_message(connection)
-        protocol.send_message(connection, 'Server got message')
-        logging.info('Server send message to client')
-        # Check that if these close connections is possible made 
-        # in client side, then its easier to maintain amount of
-        # connections.
-    s.close()
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        try:
-            logging.info('Socket {} binded'.format(s))
-            s.bind((client, port))
-            logging.info('Listening sockets')
-            s.listen(5)
-            connection, address = s.accept()
-            logging.info('Socket accepted: (connection: {}, address: {})'.format(connection, address))
+            if download_request:
+                protocol.send_file(conn, action)
 
-            while True:
-                logging.info('Waiting client messages')
-                logging.info('Connection status: {}'.format(connection))
-                message = protocol.receive_message(connection)
-                logging.info('Message as str: {}'.format(message))
-                logging.info('Got message from client: {}'.format(message))
-                protocol.send_message(connection, 'Server got message')
-                logging.info('Server send message to client')
-                # Check that if these close connections is possible made 
-                # in client side, then its easier to maintain amount of
-                # connections.
-            connection.close()
-            logging.info('Connection closed')
+            else:
+                protocol.send_message(conn, action)
 
-        except KeyboardInterrupt:
-            print('\nBye!')
-            sys.exit(0)
-    """
+    except KeyboardInterrupt:
+        print('losing^')
+        sock.close()
+
 
 
 if __name__ == '__main__':

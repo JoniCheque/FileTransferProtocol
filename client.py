@@ -19,12 +19,10 @@ def main():
 
     server = arguments[0]
     port = int(arguments[1])
-    logging.info('Arguments parsed: (server: {}, port: {})'.format(server, port))
 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((server, port))
-    logging.info('Connected to server: {}'.format(s))
 
     request = input('\nPossible request are LIST and DOWNLOAD,\n' +
             'LIST request do not take any parameters server respond with\n' +
@@ -34,11 +32,24 @@ def main():
 
     logging.info('Got request from user: {}'.format(request))
 
-    logging.info('protocol.send({}, {})'.format(s, request))
     protocol.send_message(s, request)
-    received_message = protocol.receive_message(s)
-    logging.info('Message received from server: {}'.format(received_message))
+
+    if request.lower().__contains__('download'):
+        f = open('./downloaded.jpeg', 'wb')
+        data = s.recv(1024)
+
+        while len(data) < 1024:
+            f.write(data)
+            data = s.recv(1024)
+        logging.info('All data read! Closing a file')
+        f.close()
+
+    else:
+        received_message = protocol.receive_message(s)
+        logging.info('Message received from server: {}'.format(received_message))
+
     s.close()
+    s = None
     logging.info('Connectin closed')
 
     """

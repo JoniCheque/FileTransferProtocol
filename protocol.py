@@ -18,14 +18,21 @@ def send_request(**args):
     pass
 
 
-def read_response(socket):
-    """Reads answer after request.
+def send_file(socket, fullpath):
+    """Send file to remote server
  
     Args:
- 
+        socket: socket which is initialized via ip address and port 
+        fullpath: fullpath contains path and filename which are going to sent
     Return:
     """
-    pass
+    f = open(fullpath, 'rb')
+    data = f.read(1024)
+
+    while data != b'':
+        socket.send(data)
+        data = f.read(1024)
+    logging.info('Image was read successfully')
 
 
 def receive_message(socket):
@@ -59,14 +66,12 @@ def receive_message_length(socket):
     buffer_size = ''
     while True:
         byte = socket.recv(1)
-        logging.info('BYTE: {}'.format(byte))
         if byte == b'':
             raise Exception('Error occured')
         if byte == b'\n':
             break
         buffer_size += str(byte)
     
-    logging.info('BUFFER SIZE: {}'.format(len(buffer_size)))
     return len(buffer_size)
 
 
