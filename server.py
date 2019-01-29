@@ -48,6 +48,7 @@ def main():
         while True:
             conn, addr = sock.accept()
             message = protocol.receive_message(conn)
+            logging.info(message)
             action, download_request = handle_request(str(message))
             logging.info('Response on server are: {}'.format(action))
 

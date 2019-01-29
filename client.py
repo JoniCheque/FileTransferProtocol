@@ -36,11 +36,13 @@ def main():
 
     if request.lower().__contains__('download'):
         f = open('./downloaded.jpeg', 'wb')
-        data = s.recv(1024)
 
-        while len(data) < 1024:
-            f.write(data)
+        while True:
             data = s.recv(1024)
+            f.write(data)
+            logging.info('Data length was: {}'.format(len(data)))
+            if len(data) < 1024:
+                break;
         logging.info('All data read! Closing a file')
         f.close()
 
