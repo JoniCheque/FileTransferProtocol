@@ -1,6 +1,45 @@
+import os
 import logging
 
 logging.basicConfig(format='%(asctime)s: [PROTOCOL] - %(message)s', level=logging.INFO)
+
+
+def handle_server_response(socket, request = ''):
+    if request.lower().__contains__('download'):
+        f = open('./downloaded.jpeg', 'wb')
+
+        while True:
+            data = socket.recv(1024)
+            f.write(data)
+            logging.info('Data length was: {}'.format(len(data)))
+            if len(data) < 1024:
+                break;
+        logging.info('All data read! Closing a file')
+        f.close()
+
+    else:
+        received_message = receive_message(socket)
+        logging.info('Message received from server: {}'.format(received_message))
+
+
+def handle_client_request(request = ''):
+    path = '../../Assignment05'
+
+    if request.lower().__contains__('list'):
+        print('LIST request got.')
+        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        print(files)
+        return (files, False)
+
+    elif request.lower().__contains__('download'):
+        print('DOWNLOAD request got')
+        print(request.split(" "))
+        f = request.split(' ')[-1]
+        return (path + '/' + f.strip("'"), True)
+
+    else:
+        print('Invalid request')
+
 
 def send_request(**args):
     """Client and server both have two request each of them.
