@@ -1,9 +1,8 @@
 import logging
-import os
 
 logging.basicConfig(format='%(asctime)s: [PROTOCOL] - %(message)s', level=logging.INFO)
 
-def send_request(socket, request = ''):
+def send_request(**args):
     """Client and server both have two request each of them.
     Server request:
         - ERROR(error msg)
@@ -13,23 +12,10 @@ def send_request(socket, request = ''):
         - DOWNLOAD(file)
  
     Args:
-        socket: socket which is initialized via ip address and port 
-        request: string which are used to regonize request sender
+ 
     Return:
     """
-    #path = '../../Assignment05'
-    path = '../../'
-
-    if request.lower().__contains__('list'):
-        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-        send_message(socket, files)
-
-    elif request.lower().__contains__('download'):
-        f = request.split(' ')[-1]
-        send_file(socket, path + '/' + f.strip("'"))
-
-    else:
-        print('Invalid request')
+    pass
 
 
 def send_file(socket, fullpath):
