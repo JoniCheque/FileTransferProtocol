@@ -18,7 +18,7 @@ def main():
         if not argument.__contains__('.py'):
             arguments.append(argument)
 
-    path = '../../Assignment05'
+    path = '..'
 
     files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(
             path, f
@@ -41,10 +41,10 @@ def main():
             logging.info('Response on server are: {}'.format(action))
 
             if download_request:
-                protocol.send_file(conn, action)
+                protocol.send_request(conn, action)
 
             else:
-                protocol.send_message(conn, action)
+                protocol.send_request(conn, action)
 
     except KeyboardInterrupt:
         print('losing^')

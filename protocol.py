@@ -14,7 +14,6 @@ def handle_server_response(socket, request=''):
         while True:
             data = socket.recv(1024)
             f.write(data)
-            logging.info('Data length was: {}'.format(len(data)))
             if len(data) < 1024:
                 break
         logging.info('All data read! Closing a file')
@@ -28,10 +27,9 @@ def handle_server_response(socket, request=''):
 
 
 def handle_client_request(request=''):
-    path = '../../Assignment05'
+    path = '..'
 
     if request.lower().__contains__('list'):
-        print('LIST request got.')
         files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(
                 path, f
                 ))]
@@ -65,12 +63,13 @@ def send_request(*args):
             sock = arg
             continue
 
-        else:
-            request = arg.lower()
-
         # Server statement for returning list from server to client
         if isinstance(arg, list):
+            send_message(sock, arg)
             continue
+
+        else:
+            request = arg.lower()
 
         # Client statement for asking files
         if request.__contains__('list') or request.__contains__('download'):
@@ -80,9 +79,8 @@ def send_request(*args):
         if request.__contains__('error'):
             logging.info('Contains error')
 
-        # Server statement for files which are downloadable
-        if request.__contains__('files'):
-            logging.info('Contains files')
+        if request.__contains__('..'):
+            send_file(sock, arg)
 
 
 def send_file(socket, fullpath):
@@ -93,11 +91,12 @@ def send_file(socket, fullpath):
     Return:
     """
     f = open(fullpath, 'rb')
-    data = f.read(1024)
 
-    while data != b'':
-        socket.send(data)
+    while True:
         data = f.read(1024)
+        socket.send(data)
+        if len(data) < 1024:
+            break
     logging.info('Image was read successfully')
 
 
