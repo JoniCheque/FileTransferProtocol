@@ -9,7 +9,9 @@ def main():
     """Client main program.
     Main usage: python3 client.py [IP address], [Port number]
     Program will launch TCP client and shows possible request."""
-    logging.basicConfig(format='%(asctime)s: [CLIENT] - %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s: [CLIENT] - %(message)s',
+                        level=logging.INFO)
+
     arguments = []
 
     logging.info('Iterating over arguments.')
@@ -30,8 +32,8 @@ def main():
             'Please give your request: ')
 
     logging.info('Got request from user: {}'.format(request))
-
-    protocol.send_message(s, request)
+    
+    protocol.send_request(s, request)
     protocol.handle_server_response(s, request)
 
     s.close()
